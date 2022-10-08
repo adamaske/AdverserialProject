@@ -35,27 +35,30 @@ int main(int argc, char* args[])
         return 0;
     }
     SDL_Event ev;
-
-    
+    srand((unsigned int)time(NULL));
+    //Create some input to feed the layers
+    std::vector<float> input;
+    for (int i = 0; i < 3; i++) {
+        input.push_back(i);
+    }
     //Create Layers
     std::vector<Layer*> mLayers;
-    mLayers.push_back(new Layer(2,3));
-    mLayers.push_back(new Layer(3,2));
+    //Use the size of input as the size of the first in nodes
+    mLayers.push_back(new Layer(input.size(), 5));
+    mLayers.push_back(new Layer(5, 3));
     for (int i = 0; i < mLayers.size(); i++) {
         mLayers[i]->PopulateWithRandomness();
     }
-    //Create some input to feed the layers
-    std::vector<float> input;
-    for (int i = 0; i < 10; i++) {
-        input[i] = i;
-    }
+    
+    std::cout << "Created inputs" << std::endl;
     //The out of this layer = the input of the next layer
     for (int i = 0; i < mLayers.size(); i++) {
         input = mLayers[i]->Output(input);
+        std::cout << "Got output from layer : " + i << std::endl;
     }
     //Input is now the output of the last layer
     for (int i = 0; i < input.size(); i++) {
-        std::cout << "Input : " + i << " : " << input[i] << std::endl;
+        std::cout << "Input : " + static_cast<int16_t>(i) << " : " << input[i] << std::endl;
     }
     bool bIsRunning = true;
     while (bIsRunning) {
