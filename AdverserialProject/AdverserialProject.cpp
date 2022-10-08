@@ -35,11 +35,12 @@ int main(int argc, char* args[])
         return 0;
     }
     SDL_Event ev;
-    srand((unsigned int)time(NULL));
+    srand((unsigned int)time(0));
     //Create some input to feed the layers
     std::vector<float> input;
     for (int i = 0; i < 3; i++) {
-        input.push_back(i);
+        input.push_back((rand() % 100) / 100);
+        std::cout << (rand() % 100) / 100.f << std::endl;
     }
     //Create Layers
     std::vector<Layer*> mLayers;

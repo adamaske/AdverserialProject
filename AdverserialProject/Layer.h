@@ -52,10 +52,14 @@ public:
 				weighted  += input[j] * mWeights[j][i];
 			}
 			//This node has completed the cN*wN+bN
-			outputs[i] = weighted;
+			outputs[i] = CalculateActivation(weighted);
 		}
 		//Return all the outputs
 		return outputs;
+	}
+
+	float CalculateActivation(float value) {
+		return tanh(value);
 	}
 
 	void PopulateWithRandomness() {
@@ -64,7 +68,7 @@ public:
 			mBiases[i] = rand() % 10;
 			//std::cout << "Set bias in outNodes : " + static_cast<int16_t>(i) << std::endl;
 			for (int j = 0; j < mInNodes; j++) {
-				mWeights[j][i] = ((rand() % 10) / 10);
+				mWeights[j][i] = ((-5 + (rand() % 10)) / 10.f);
 			}
 			
 		}
