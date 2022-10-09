@@ -8,9 +8,12 @@ private:
 	int mOutNodes = 0;
 	//Each of my in nodes has a weight associted with each out node
 	//Therefore in x out amount of weights
-	std::vector<std::vector<float>> mWeights = { {} };
+	std::vector<float> mWeights = { };
 	//On bias per in or out node
 	std::vector<float> mBiases;
+	//For backpropagation
+	std::vector<float> mBiasGradients;
+	std::vector<float> mWeightGradients;
 public:
 	Layer(int connections, int nodes) {
 		mInNodes = connections;
@@ -18,19 +21,15 @@ public:
 		//Each in node has an outNodes amount of connections
 		//So for each inNode, we need an array of OutNodes size
 		//Init with zero values
-		for (int i = 0; i < mInNodes; i++) {
-			mWeights.push_back(std::vector<float>{0});
-			
+		for (int i = 0; i < mInNodes * mOutNodes; i++) {
+			mWeights.push_back(0);
+			mWeightGradients.push_back(0);
 		}
-		for (int i = 0; i < mInNodes; i++) {
-			for (int j = 0; j < mOutNodes; j++) {
-				mWeights[i].push_back(0);
-			}
 
-		}
 		
 		for (int i = 0; i < mOutNodes; i++) {
 			mBiases.push_back(0);
+			mBiasGradients.push_back(0);
 		}
 	}
 
@@ -49,7 +48,7 @@ public:
 			for (int j = 0; j < mInNodes; j++){
 				//Get the weight of this connection j to the current node i
 				//Times the input input from this connection
-				weighted  += input[j] * mWeights[j][i];
+				weighted  += input[j] * mWeights[WeightIndex(j, i)];
 			}
 			//This node has completed the cN*wN+bN
 			outputs[i] = CalculateActivation(weighted);
@@ -61,6 +60,9 @@ public:
 	float CalculateActivation(float value) {
 		return tanh(value);
 	}
+	float CalculateActivationDerivative(float value) {
+		return 1 - pow(tanh(value),2);
+	}
 
 	void PopulateWithRandomness() {
 		//std::cout << "Started randomness function!" << std::endl;
@@ -68,7 +70,7 @@ public:
 			mBiases[i] = rand() % 10;
 			//std::cout << "Set bias in outNodes : " + static_cast<int16_t>(i) << std::endl;
 			for (int j = 0; j < mInNodes; j++) {
-				mWeights[j][i] = ((-5 + (rand() % 10)) / 10.f);
+				mWeights[WeightIndex(j, i)] = ((-5 + (rand() % 10)) / 10.f);
 			}
 			
 		}
@@ -78,6 +80,10 @@ public:
 		//	std::cout << mBiases[i] << std::endl;
 		//}
 		//std::cout << "Finished randomness function!" << std::endl;
+	}
+
+	float WeightIndex(int in, int out) {
+		return (in * out) + in;
 	}
 };
 

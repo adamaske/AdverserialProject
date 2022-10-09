@@ -11,7 +11,7 @@
 #include <vector>
 #include <chrono>
 #include <thread>
-
+#include "Network.h"
 
 #include "Layer.h"
 
@@ -60,6 +60,7 @@ int main(int argc, char* args[])
         input.push_back((rand() % 100) / 100);
         std::cout << (rand() % 100) / 100.f << std::endl;
     }
+    std::cout << "Created inputs" << std::endl;
     //Create Layers
     std::vector<Layer*> mLayers;
     //Use the size of input as the size of the first in nodes
@@ -68,19 +69,24 @@ int main(int argc, char* args[])
     for (int i = 0; i < mLayers.size(); i++) {
         mLayers[i]->PopulateWithRandomness();
     }
+    Network net(mLayers);
     
-    std::cout << "Created inputs" << std::endl;
+    
     //The out of this layer = the input of the next layer
-    for (int i = 0; i < mLayers.size(); i++) {
-        input = mLayers[i]->Output(input);
-        std::cout << "Got output from layer : " + i << std::endl;
-    }
+    //for (int i = 0; i < mLayers.size(); i++) {
+    //    input = mLayers[i]->Output(input);
+    //    std::cout << "Got output from layer : " + i << std::endl;
+    //}
     //Input is now the output of the last layer
+    //Replaced by
+    input = net.Output(input);
+    //Prints the output of the net
     for (int i = 0; i < input.size(); i++) {
         std::cout << "Input : " + static_cast<int16_t>(i) << " : " << input[i] << std::endl;
     }
 
     //Write network to file
+    net.WriteToFile("chessNetwork");
     bool bIsRunning = true;
     while (bIsRunning) {
         //Henter event som skjer
