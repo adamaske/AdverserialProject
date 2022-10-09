@@ -107,6 +107,28 @@ public:
 		return (in * out) + in;
 	}
 	
+	void Backpropagate(float learnRate) {
+		//We want to change every variable as to reduce the cost function
+		//We can find what way we should move the variable by getting the cost function
+		//Derived on the variable, here for weights, the new weight the equals itself minus the gradient/slope/value
+		for (int i = 0; i < mInNodes; i++) {
+			for (int j = 0; j < mOutNodes; j++) {
+				//Find the partial derivatives, find totalCost/mWeigts[i] from it
+				mWeightGradients[WeightIndex(i, j)] = mLastInputs[i] * CalculateActivationDerivative(mLastActivation[i]) * 2 * (mLastInputs[i] - mLastCorrect[i]);
+				mWeights[WeightIndex(i, j)] = mWeights[WeightIndex(i, j)] - (mWeightGradients[WeightIndex(i, j)] * learnRate);
+
+				//The same for bias
+				//mTotalCost / mBiases[i] = 
+
+				mBiasGradients[WeightIndex(i, j)] = 0;
+				mBiases[WeightIndex(i, j)] = mBiases[WeightIndex(i, j)] -	(mBiasGradients[WeightIndex(i, j)] * learnRate);
+			}
+		}
+		
+	}
+	void Backpropagate(float a, float b) {
+
+	}
 
 };
 

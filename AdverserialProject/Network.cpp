@@ -16,9 +16,14 @@ std::vector<float> Network::Output(std::vector<float> input, std::vector<float> 
     
     //Update cost on last layer/create cost array
     Layer* mOutputLayer = mLayers[mLayers.size() - 1];
-    std::vector<float>  nodeValues = mOutputLayer->OutputLayerNodeValues(correctOutput);
+    mOutputLayer->Backpropagate(0.5);
+
+    for(int i = mLayers.size()-2; i >= 0; i--) {
+        Layer* hiddenLayer = mLayers[i];
+        hiddenLayer->Backpropagate(0.5);
+    }
+
     return input;
-   
 }
 
 void Network::Backpropagate()
