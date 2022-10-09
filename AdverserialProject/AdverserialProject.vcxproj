@@ -131,10 +131,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AdverserialProject.cpp" />
+    <ClCompile Include="Chess.cpp" />
     <ClCompile Include="Layer.cpp" />
+    <ClCompile Include="Network.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Chess.h" />
     <ClInclude Include="Layer.h" />
+    <ClInclude Include="Network.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

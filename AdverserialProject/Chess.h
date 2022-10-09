@@ -1,6 +1,13 @@
 #pragma once
 #include <iostream>
 #include <vector>
+
+#define WHITE 'W'
+#define BLACK 'B'
+
+const int width = 8;
+const int height = 8;
+
 class Chess
 {
 public:
@@ -22,10 +29,7 @@ public:
 };
 
 
-#define WHITE 'W'
-#define BLACK 'B'
-const int width = 8;
-const int height = 8;
+
 
 class Piece {
 public:

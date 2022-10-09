@@ -14,8 +14,14 @@ private:
 	//For backpropagation
 	std::vector<float> mBiasGradients;
 	std::vector<float> mWeightGradients;
-
+	std::vector<float> mLastWeightedInputs;
+	std::vector<float> mLastInputs;
 	std::vector<float> mLastActivation;
+	std::vector<float> mLastCorrect;
+	std::vector<float> mCosts;
+
+	float mLearningRate = 0.1f;
+	float mTotalCost = 0;
 public:
 	Layer(int connections, int nodes) {
 		mInNodes = connections;
@@ -34,7 +40,20 @@ public:
 		}
 	}
 
+	void PopulateWithRandomness() {
+		//std::cout << "Started randomness function!" << std::endl;
+		for (int i = 0; i < mOutNodes; i++) {
+			mBiases[i] = rand() % 10;
+			//std::cout << "Set bias in outNodes : " + static_cast<int16_t>(i) << std::endl;
+			for (int j = 0; j < mInNodes; j++) {
+				mWeights[WeightIndex(j, i)] = ((-5 + (rand() % 10)) / 10.f);
+			}
+
+		}
+	}
+
 	std::vector<float> Output(std::vector<float> input) {
+		mLastInputs = input;
 		//Outputs = c1*w1.. +cN*wN +bN
 		std::vector<float> outputs;
 		//These are the inputs * weights + biases
@@ -52,6 +71,7 @@ public:
 				weighted  += input[j] * mWeights[WeightIndex(j, i)];
 			}
 			//This node has completed the cN*wN+bN
+			mLastWeightedInputs.push_back(weighted);
 			outputs[i] = CalculateActivation(weighted);
 		}
 		//Set last activation
@@ -67,26 +87,26 @@ public:
 		return 1 - pow(tanh(value),2);
 	}
 
-	void PopulateWithRandomness() {
-		//std::cout << "Started randomness function!" << std::endl;
-		for (int i = 0; i < mOutNodes; i++) {
-			mBiases[i] = rand() % 10;
-			//std::cout << "Set bias in outNodes : " + static_cast<int16_t>(i) << std::endl;
-			for (int j = 0; j < mInNodes; j++) {
-				mWeights[WeightIndex(j, i)] = ((-5 + (rand() % 10)) / 10.f);
-			}
-			
+	void CalculateCosts(std::vector<float> correctOutput) {
+		mLastCorrect = correctOutput;
+		for (int i = 0; i < mLastActivation.size(); i++) {
+			mCosts.push_back(pow(mLastActivation[i] - correctOutput[i], 2));
 		}
+		float cost = 0;
+		for (int i = 0; i < mCosts.size(); i++) {
+			cost += mCosts[i];
+		}
+		mTotalCost = cost;
+	}
 
-		//Print biases
-		//for (int i = 0; i < mBiases.size(); i++) {
-		//	std::cout << mBiases[i] << std::endl;
-		//}
-		//std::cout << "Finished randomness function!" << std::endl;
+	float CostDerivative(float activation, float correct) {
+		return 2 * (activation - correct);
 	}
 
 	float WeightIndex(int in, int out) {
 		return (in * out) + in;
 	}
+	
+
 };
 

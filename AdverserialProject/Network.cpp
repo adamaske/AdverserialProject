@@ -13,14 +13,10 @@ std::vector<float> Network::Output(std::vector<float> input, std::vector<float> 
     for (int i = 0; i < mLayers.size(); i++) {
         input = mLayers[i]->Output(input);
     }
-    //Get squares of costs
-    float cost = 0;
-    //Cost equals the sum of input - correctanswer, squared for positive number
-    for (int i = 0; i < correctOutput.size(); i++) {
-        cost += pow(input[i] - correctOutput[i], 2);
-    }
-    mCosts.push_back(cost);
-    Backpropagate();
+    
+    //Update cost on last layer/create cost array
+    Layer* mOutputLayer = mLayers[mLayers.size() - 1];
+    std::vector<float>  nodeValues = mOutputLayer->OutputLayerNodeValues(correctOutput);
     return input;
    
 }
@@ -28,6 +24,13 @@ std::vector<float> Network::Output(std::vector<float> input, std::vector<float> 
 void Network::Backpropagate()
 {
     //Use mCost and affect the layer
+    //the last layer
+    Layer* outputLayer = mLayers[mLayers.size() - 1];
+    
+   //for (int i = mLayers.size() - 2; i >= 0; i--) {
+   //    Layer* hiddenLayer = mLayers[i];
+   //    hiddenLayer.
+   //}
 }
 
 void Network::WriteToFile(const char* fileName)

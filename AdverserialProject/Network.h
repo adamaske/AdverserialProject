@@ -15,6 +15,6 @@ public:
 	std::vector<float> Output(std::vector<float> input, std::vector<float> correctOutput);
 	void Backpropagate();
 	void WriteToFile(const char* fileName);
-
+	void UpdateAllGradients();
 };
 
