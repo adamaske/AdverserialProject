@@ -4,12 +4,14 @@
 #define WIDTH 600
 
 #include <iostream>
+#include <fstream>
 #include <SDL.h>
 #include <stdlib.h>
 #include <unordered_map>
 #include <vector>
 #include <chrono>
 #include <thread>
+
 
 #include "Layer.h"
 
@@ -36,6 +38,22 @@ int main(int argc, char* args[])
     }
     SDL_Event ev;
     srand((unsigned int)time(0));
+    //Les pgn 
+    std::ifstream carlsenGamesFile("");
+    //std::vector<Chess> carlsenGames;
+    if (carlsenGamesFile.is_open()) {
+        //Chess game;
+        //For each move found, game.DoMove(from, to)
+    }
+    //
+    //for(int i = 0; i < carlsenGames.size(); i++){
+    //  input = carlsenGames[i].GetBoardWeights/Values();
+    //  
+    // //Go trough network
+    //}
+    //The weight for each piece is the input, 0 is empty piece, positive is white, negative is black
+    std::vector<float> chessBoard;
+    //Dette prosjektet blir nå sjakk?
     //Create some input to feed the layers
     std::vector<float> input;
     for (int i = 0; i < 3; i++) {
@@ -61,6 +79,8 @@ int main(int argc, char* args[])
     for (int i = 0; i < input.size(); i++) {
         std::cout << "Input : " + static_cast<int16_t>(i) << " : " << input[i] << std::endl;
     }
+
+    //Write network to file
     bool bIsRunning = true;
     while (bIsRunning) {
         //Henter event som skjer
