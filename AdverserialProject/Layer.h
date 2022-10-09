@@ -14,6 +14,8 @@ private:
 	//For backpropagation
 	std::vector<float> mBiasGradients;
 	std::vector<float> mWeightGradients;
+
+	std::vector<float> mLastActivation;
 public:
 	Layer(int connections, int nodes) {
 		mInNodes = connections;
@@ -26,7 +28,6 @@ public:
 			mWeightGradients.push_back(0);
 		}
 
-		
 		for (int i = 0; i < mOutNodes; i++) {
 			mBiases.push_back(0);
 			mBiasGradients.push_back(0);
@@ -53,6 +54,8 @@ public:
 			//This node has completed the cN*wN+bN
 			outputs[i] = CalculateActivation(weighted);
 		}
+		//Set last activation
+		mLastActivation = outputs;
 		//Return all the outputs
 		return outputs;
 	}
