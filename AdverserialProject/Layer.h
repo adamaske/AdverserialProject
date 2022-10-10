@@ -4,6 +4,7 @@
 class Layer
 {
 private:
+	friend class Network;
 	int mInNodes = 0;
 	int mOutNodes = 0;
 	//Each of my in nodes has a weight associted with each out node
@@ -129,6 +130,5 @@ public:
 	void Backpropagate(float a, float b) {
 
 	}
-
 };
 
