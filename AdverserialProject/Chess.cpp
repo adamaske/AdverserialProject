@@ -1,8 +1,8 @@
 #include "Chess.h"
-#include <iostream>
 #include <string>
-#include "chess.h"
-
+#include "Chess.h"
+#include "Piece.h"
+Piece* pieces[height][width];
 void Chess::StartGame() {
     player = WHITE;
     CreateBoard();

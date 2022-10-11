@@ -2,11 +2,11 @@
 #include <iostream>
 #include <vector>
 
-#define WHITE 'W'
-#define BLACK 'B'
+//#define WHITE 'W'
+//#define BLACK 'B'
 
-const int width = 8;
-const int height = 8;
+//const int width = 8;
+//const int height = 8;
 
 class Chess
 {
@@ -21,7 +21,8 @@ public:
 	char REPICKPIECE = 'N';
 	bool GameOver();
 	void NextPlayer();
-	char player = WHITE;
+	char player = 'W';
 	std::vector<std::string> previousMoves;
+	//Piece* pieces[height][width];
 };
 

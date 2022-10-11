@@ -55,21 +55,22 @@ int main(int argc, char* args[])
     std::vector<float> chessBoard;
     //Dette prosjektet blir nå sjakk?
     //Create some input to feed the layers
-    std::vector<float> input;
-    for (int i = 0; i < 3; i++) {
-        input.push_back((rand() % 100) / 100);
-        std::cout << (rand() % 100) / 100.f << std::endl;
-    }
+    std::vector<float> input = { 1, 3, 5, 6, 8};
+    std::vector<float> correct = { 0.1f, 0.9f };
+
     std::cout << "Created inputs" << std::endl;
     //Create Layers
     std::vector<Layer*> mLayers;
     //Use the size of input as the size of the first in nodes
     mLayers.push_back(new Layer(input.size(), 5));
     mLayers.push_back(new Layer(5, 3));
+    mLayers.push_back(new Layer(3, 5));
+    mLayers.push_back(new Layer(5, correct.size()));
     for (int i = 0; i < mLayers.size(); i++) {
         mLayers[i]->PopulateWithRandomness();
     }
-    Network net(mLayers);
+    std::cout << "Populated with randomness" << std::endl;
+    Network net("Network 1", mLayers);
     
     
     //The out of this layer = the input of the next layer
@@ -79,12 +80,16 @@ int main(int argc, char* args[])
     //}
     //Input is now the output of the last layer
     //Replaced by
-    input = net.Output(input);
-    //Prints the output of the net
-    for (int i = 0; i < input.size(); i++) {
-        std::cout << "Input : " + static_cast<int16_t>(i) << " : " << input[i] << std::endl;
+    std::cout << "Started asking for output" << std::endl;
+    for (int i = 0; i < 1000; i++) {
+        input = { 1, 3, 5, 6, 8 };
+        input = net.Output(input, correct);
+        //Prints the output of the net
+        for (int j = 0; j < input.size(); j++) {
+            std::cout << "Output : " + static_cast<int16_t>(j) << " : " << input[j] << std::endl;
+        }
     }
-
+    
     //Write network to file
     net.WriteToFile("chessNetwork");
     bool bIsRunning = true;

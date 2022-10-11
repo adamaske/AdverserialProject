@@ -49,16 +49,23 @@ public:
 	void PopulateWithRandomness() {
 		//std::cout << "Started randomness function!" << std::endl;
 		for (int i = 0; i < mOutNodes; i++) {
-			mBiases[i] = rand() % 10;
+			mBiases[i] = rand() % 20;
 			//std::cout << "Set bias in outNodes : " + static_cast<int16_t>(i) << std::endl;
 			for (int j = 0; j < mInNodes; j++) {
-				mWeights[WeightIndex(j, i)] = ((-5 + (rand() % 10)) / 10.f);
+				mWeights[WeightIndex(j, i)] = (((rand() % 250)) / 100.f);
 			}
 
 		}
 	}
 
 	std::vector<float> Output(std::vector<float> input) {
+		std::cout << "Layer starting output" << std::endl;
+		for (int i = 0; i < mInNodes; i++) {
+			for (int j = 0; j < mOutNodes; j++) {
+				std::cout << "w" << mWeights[WeightIndex(i, j)] << ", ";
+			}
+			std::cout << std::endl;
+		}
 		mLastInputs = input;
 		//Outputs = c1*w1.. +cN*wN +bN
 		std::vector<float> outputs;
@@ -69,7 +76,7 @@ public:
 		//For each of my nodes that gives an output, the outnodes
 		for (int i = 0; i < mOutNodes; i++) {
 			//Each node = c1*w1+cN*wN+biasN, init with the bias for this outnode
-			float weighted = 0;
+			float weighted = mBiases[i];;
 			//For each connections to this node
 			for (int j = 0; j < mInNodes; j++){
 				//Get the weight of this connection j to the current node i
@@ -78,7 +85,7 @@ public:
 			}
 			//This node has completed the cN*wN+bN
 			mLastWeightedInputs.push_back(weighted);
-			weighted += mBiases[i];
+			//weighted += 
 			outputs[i] = CalculateActivation(weighted);
 		}
 		//Set last activation
@@ -88,10 +95,11 @@ public:
 	}
 
 	float CalculateActivation(float value) {
-		return tanh(value);
+		std::cout << "tan function returning" << 1 / (1 + exp(-value * 0.1)) << std::endl;
+		return 1 / (1 + exp(-value*0.1));
 	}
 	float CalculateActivationDerivative(float value) {
-		return 1 - pow(tanh(value),2);
+		return (1 / (1 + exp(-value * 0.1))) * (1-(1 / (1 + exp(-value * 0.1))));
 	}
 
 	void CalculateCosts(std::vector<float> correctOutput) {

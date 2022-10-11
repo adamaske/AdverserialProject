@@ -24,42 +24,93 @@ std::vector<float> Network::Output(std::vector<float> input)
 
 std::vector<float> Network::Output(std::vector<float> input, std::vector<float> correctOutput)
 {
+    //
     for (int i = 0; i < mLayers.size(); i++) {
         input = mLayers[i]->Output(input);
     }
-
-    ////We want to change every variable as to reduce the cost function
-    //    //We can find what way we should move the variable by getting the cost function
-    //    //Derived on the variable, here for weights, the new weight the equals itself minus the gradient/slope/value
-    //for (int i = 0; i < mInNodes; i++) {
-    //    for (int j = 0; j < mOutNodes; j++) {
-    //        //Find the partial derivatives, find totalCost/mWeigts[i] from it
-    //        mWeightGradients[WeightIndex(i, j)] = mLastInputs[i] * CalculateActivationDerivative(mLastActivation[i]) * 2 * (mLastInputs[i] - mLastCorrect[i]);
-    //        mWeights[WeightIndex(i, j)] = mWeights[WeightIndex(i, j)] - (mWeightGradients[WeightIndex(i, j)] * learnRate);
-    //
-    //        //The same for bias
-    //        //mTotalCost / mBiases[i] = 
-    //
-    //        mBiasGradients[WeightIndex(i, j)] = 0;
-    //        mBiases[WeightIndex(i, j)] = mBiases[WeightIndex(i, j)] - (mBiasGradients[WeightIndex(i, j)] * learnRate);
-    //    }
-    //}
-    //The cost is a function of SUm(a-y^2), which is a function of w which is a function b
-    // 
     //Update cost on last layer/create cost array
+    std::cout << "Starting backprop" << std::endl;
+    float learnRate = 0.5;
     Layer* mOutputLayer = mLayers[mLayers.size() - 1];
+    //Only the output layer can create the cost function
     mOutputLayer->CalculateCosts(correctOutput);
-    //Sum of the costs for each output
-    float cost = mOutputLayer->mTotalCost;
+    std::cout << "Started finding OutputLayer gradients" << std::endl;
+    //For every weight we want to find a gradient for which it affects the cost function    
+    for (int i = 0; i < mOutputLayer->mInNodes; i++) {
+        for (int j = 0; j < mOutputLayer->mOutNodes; j++) {
+            //outh1 = aL, Etotal = TotalCost, net = z(l) 
+            //This should be correct now
+            //c0/aL = 2(aL -y) because '(a-y)^2 = 2 al -y, 
+            //How the cost function is effected by the activation of this node
+            auto c = 2 * mOutputLayer->mLastActivation[j] - correctOutput[j];
 
+            //al/z(l) = 'activationfunction, 
+            //How the activation of this node is affected by the weightedInput, derivative of thee activation function
+            auto b = mOutputLayer->CalculateActivationDerivative(mOutputLayer->mLastWeightedInputs[j]);
+
+            //zL/wL = al-1, 
+            //How the activation of this node is effected by the current weight
+            auto a = mLayers[mLayers.size() - 1]->mLastActivation[j];
+
+            //zL/bL = 1
+            //TotalCost derived by this weight = gradient
+            mOutputLayer->mWeightGradients[j + (j*i)] = a * b * c;
+            mOutputLayer->mBiasGradients[j] = 1 * b * c;
+        }
+    }
+    //now we have the gradients for all the weights connected to the outputs
+    //Now go backwards in the network
+    
+    //Sum of the costs for each output SUM(a_j*^2 -y_j)^2
+    float c0 = mOutputLayer->mTotalCost;
+    //Go through every weight
+    std::vector<float> costs = mOutputLayer->mCosts;
 
     //mOutputLayer->Backpropagate(0.5);
-    for(int i = mLayers.size()-2; i >= 0; i--) {
-        Layer* hiddenLayer = mLayers[i];
-       
+    for (int l = mLayers.size() - 2; l >= 0; l--) {
+        for (int i = 0; i < mLayers[l]->mInNodes; i++) {
+            for (int j = 0; j < mLayers[l]->mOutNodes; j++) {
+                //outh1 = aL, Etotal = TotalCost, net = z(l) 
+                //This should be correct now
+                //c0/aL = 2(aL -y) because '(a-y)^2 = 2 al -y, 
+                // c0 / al = e / al + e1 / al
+                //How the cost function is effected by the activation of this node
+                //Denne er annerledes
+                //Vil ha nodeouts fra layersa over denne
+                float test = 1;
+                for (int k = l; k < mLayers.size(); k++) {
+                    for (int p = 0; p < mLayers[k]->mOutNodes; p++) {
+                       
+                    }
+                    
+                }
+                auto c = 2 * mLayers[l]->mLastActivation[j] - ;
+                //al/z(l) = 'activationfunction, 
+                //How the activation of this node is affected by the weightedInput, derivative of thee activation function
+                auto b = mLayers[l]->CalculateActivationDerivative(mLayers[l]->mLastWeightedInputs[j]);
+                //zL/wL = al-1, AL-1 is the activation of the previous node
+                //How the activation of this node is effected by the current weight
+                auto a = mLayers[l]->mLastInputs[i];
+                //zL/bL = 1
+                //TotalCost derived by this weight = gradient
+                mLayers[l]->mWeightGradients[i + (j * i)] = a * b * c;
+                mLayers[l]->mBiasGradients[j] = 1 * b * c;                
+            }
+        }
         //hiddenLayer->Backpropagate(0.5);
     }
+    //Apply gradients to all the weights
+    for (int i = 0; i < mLayers.size(); i++) {
+        for (int j = 0; j < mLayers[i]->mInNodes; j++) {
+            for (int k = 0; k < mLayers[i]->mOutNodes; k++) {
+                mLayers[i]->mWeights[j + (k * j)] = mLayers[i]->mWeights[j + (k * j)] - (mLayers[i]->mWeightGradients[j + (k*j)] * learnRate);
+                mLayers[i]->mBiases[k] = mLayers[i]->mBiases[k] - (mLayers[i]->mBiasGradients[k] * learnRate);
+            }
+        }
+    }
 
+    //all the weights = weight - (learnRate * gradientWeights)
+    std::cout << "Completed an output of network" << std::endl;
     return input;
 }
 

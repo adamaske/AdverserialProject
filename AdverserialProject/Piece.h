@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+
 #define WHITE 'W'
 #define BLACK 'B'
 
@@ -12,7 +13,7 @@ public:
 	virtual char GetPiece() = 0;
 	virtual float GetValue() {
 		return 0;
-	};
+	}; 
 	char GetColor() {
 		return myColor;
 	}
@@ -31,7 +32,7 @@ private:
 	char myColor;
 };
 
-Piece* pieces[height][width];
+
 
 class Pawn :public Piece {
 public:
