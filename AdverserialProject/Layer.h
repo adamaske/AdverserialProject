@@ -15,10 +15,15 @@ private:
 	//For backpropagation
 	std::vector<float> mBiasGradients;
 	std::vector<float> mWeightGradients;
+	//Every input x weight, nto affected by bias
 	std::vector<float> mLastWeightedInputs;
+	//The inputs the layer got
 	std::vector<float> mLastInputs;
+	//The value each outputnode returned
 	std::vector<float> mLastActivation;
+	//The last correct output checked
 	std::vector<float> mLastCorrect;
+	//Last costs
 	std::vector<float> mCosts;
 
 	float mLearningRate = 0.1f;
@@ -64,7 +69,7 @@ public:
 		//For each of my nodes that gives an output, the outnodes
 		for (int i = 0; i < mOutNodes; i++) {
 			//Each node = c1*w1+cN*wN+biasN, init with the bias for this outnode
-			float weighted = mBiases[i];
+			float weighted = 0;
 			//For each connections to this node
 			for (int j = 0; j < mInNodes; j++){
 				//Get the weight of this connection j to the current node i
@@ -73,6 +78,7 @@ public:
 			}
 			//This node has completed the cN*wN+bN
 			mLastWeightedInputs.push_back(weighted);
+			weighted += mBiases[i];
 			outputs[i] = CalculateActivation(weighted);
 		}
 		//Set last activation
@@ -106,29 +112,6 @@ public:
 
 	float WeightIndex(int in, int out) {
 		return (in * out) + in;
-	}
-	
-	void Backpropagate(float learnRate) {
-		//We want to change every variable as to reduce the cost function
-		//We can find what way we should move the variable by getting the cost function
-		//Derived on the variable, here for weights, the new weight the equals itself minus the gradient/slope/value
-		for (int i = 0; i < mInNodes; i++) {
-			for (int j = 0; j < mOutNodes; j++) {
-				//Find the partial derivatives, find totalCost/mWeigts[i] from it
-				mWeightGradients[WeightIndex(i, j)] = mLastInputs[i] * CalculateActivationDerivative(mLastActivation[i]) * 2 * (mLastInputs[i] - mLastCorrect[i]);
-				mWeights[WeightIndex(i, j)] = mWeights[WeightIndex(i, j)] - (mWeightGradients[WeightIndex(i, j)] * learnRate);
-
-				//The same for bias
-				//mTotalCost / mBiases[i] = 
-
-				mBiasGradients[WeightIndex(i, j)] = 0;
-				mBiases[WeightIndex(i, j)] = mBiases[WeightIndex(i, j)] -	(mBiasGradients[WeightIndex(i, j)] * learnRate);
-			}
-		}
-		
-	}
-	void Backpropagate(float a, float b) {
-
 	}
 };
 
